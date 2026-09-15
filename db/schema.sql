@@ -161,6 +161,72 @@ create table tool_pricing_history (
 create index on tool_pricing_history (tool_id, captured_on desc);
 
 -- ---------------------------------------------------------------------------
+-- 3c. Evidence records — the original-value requirement as DATA.
+--
+-- Doc 07's rule is that every money page carries something that cannot be
+-- generated from public text. That rule was previously enforced by asking an AI
+-- reviewer whether the draft "contained original value" — but a model reading a
+-- draft cannot tell a real benchmark from a convincing sentence about one. It
+-- can only confirm the draft CLAIMS the work was done.
+--
+-- So the claim becomes a row. W05 cites an evidence record on the brief, W06
+-- writes the page around it, and W07 verifies the row exists and is verified
+-- rather than judging the prose. The publish trigger below makes it a hard gate:
+-- a page cannot reach `published` without one.
+--
+-- This is the same design as TOS-as-booleans (doc 02): a rule nobody can forget
+-- to apply, because the database applies it.
+-- ---------------------------------------------------------------------------
+create table evidence_records (
+  id            uuid primary key default gen_random_uuid(),
+  niche_id      uuid references niches(id) on delete cascade,
+  tool_id       uuid references tools(id) on delete set null,
+  kind          text not null check (kind in (
+                  'pricing_history',      -- from tool_pricing_history, our own tracking
+                  'rubric_score',         -- scored against our published methodology
+                  'tested_limitation',    -- a limit we actually hit
+                  'benchmark',            -- a timed or measured test we ran
+                  'community_sentiment',  -- quantified: "34 of 120 reviews mention X"
+                  'screenshot')),         -- our own capture, not vendor marketing
+
+  -- The claim, in the form it will appear on the page. QA checks the draft
+  -- against THIS, so it has to be specific enough to check against.
+  -- Good: "Atera Professional rose from $129 to $149/tech/mo between 2025-03-11
+  -- and 2026-08-02". Bad: "Atera pricing has increased".
+  claim         text not null,
+  value         jsonb,                    -- structured payload behind the claim
+
+  -- Provenance. first_party means WE produced it and can prove it.
+  source_kind   text not null check (source_kind in
+                  ('first_party_capture','our_test','vendor_page','community','third_party')),
+  source_url    text,
+  artifact_url  text,                     -- the screenshot, export or raw capture
+  captured_at   timestamptz not null,
+  captured_by   text,                     -- person or workflow that produced it
+
+  status        text not null default 'draft'
+                  check (status in ('draft','verified','stale','retracted')),
+  verified_at   timestamptz,
+  verified_by   text,
+  notes         text,
+  created_at    timestamptz not null default now(),
+  updated_at    timestamptz not null default now()
+);
+create index on evidence_records (niche_id, status);
+create index on evidence_records (tool_id);
+create trigger trg_evidence_updated before update on evidence_records
+  for each row execute function set_updated_at();
+
+-- A first-party claim is only worth anything if the artifact behind it exists.
+-- Vendor-page and community evidence needs a source URL instead.
+alter table evidence_records add constraint evidence_needs_provenance check (
+  case
+    when source_kind in ('first_party_capture','our_test') then artifact_url is not null
+    else source_url is not null
+  end
+);
+
+-- ---------------------------------------------------------------------------
 -- 4. Keywords / topic opportunities
 -- ---------------------------------------------------------------------------
 create table keywords (
@@ -214,7 +280,11 @@ create table content_items (
                                            'drafting','drafted','qa','qa_failed','ready',
                                            'published','updated','killed')),
   brief                jsonb,
-  original_value_req   text,                       -- what first-hand data this piece MUST contain
+  -- The original-value requirement, as a pointer to real data rather than a
+  -- free-text instruction the writer can satisfy rhetorically. Enforced at
+  -- publish time by trg_content_items_require_evidence below.
+  evidence_record_id   uuid references evidence_records(id),
+  original_value_req   text,                       -- human-readable restatement of the cited claim
   body_md              text,
   meta                 jsonb,                      -- title variants, meta description, schema
   primary_offer_id     uuid references offers(id),
@@ -227,6 +297,80 @@ create index on content_items (status);
 create index on content_items (cluster);
 create trigger trg_content_items_updated before update on content_items
   for each row execute function set_updated_at();
+create index on content_items (evidence_record_id);
+
+-- The original-value gate, enforced by the database.
+--
+-- Every prior version of this rule lived in a prompt or a checklist, and rules
+-- in prompts get relaxed at 2am in week nine when the queue is backed up. This
+-- one cannot be: a content item cannot enter `published` without citing an
+-- evidence record that someone or something actually verified.
+--
+-- Google's August 2026 spam update named exactly this failure — programmatic and
+-- AI content published at scale with no first-hand substance. The mitigation
+-- only works if it is impossible to skip.
+--
+-- Deliberately NOT bypassed for any role: the orchestrator runs as the service
+-- role, so if this only applied to anon it would never fire in production.
+create or replace function require_verified_evidence() returns trigger
+language plpgsql as $$
+declare ev record;
+begin
+  if new.status = 'published' and old.status is distinct from 'published' then
+    if new.evidence_record_id is null then
+      raise exception
+        'content_items %: cannot publish without evidence_record_id. Every money page '
+        'must carry one first-hand data point (docs/07). Cite a verified row in '
+        'evidence_records, or leave this in ready/qa_failed.', new.id
+        using errcode = 'check_violation';
+    end if;
+
+    select status, claim into ev from evidence_records where id = new.evidence_record_id;
+    if not found then
+      raise exception 'content_items %: evidence_record_id % does not exist.',
+        new.id, new.evidence_record_id using errcode = 'foreign_key_violation';
+    end if;
+    if ev.status <> 'verified' then
+      raise exception
+        'content_items %: evidence record % is %, not verified. An unverified claim '
+        'is exactly the fabricated specific this gate exists to stop.',
+        new.id, new.evidence_record_id, ev.status using errcode = 'check_violation';
+    end if;
+  end if;
+  return new;
+end;
+$$;
+
+create trigger trg_content_items_require_evidence
+  before update on content_items
+  for each row execute function require_verified_evidence();
+
+-- Same gate on insert, for anything created already-published (a backfill, an
+-- import, a workflow that skips the pipeline).
+create or replace function require_verified_evidence_ins() returns trigger
+language plpgsql as $$
+declare ev record;
+begin
+  if new.status = 'published' then
+    if new.evidence_record_id is null then
+      raise exception
+        'content_items %: cannot insert as published without evidence_record_id (docs/07).',
+        new.id using errcode = 'check_violation';
+    end if;
+    select status into ev from evidence_records where id = new.evidence_record_id;
+    if not found or ev.status <> 'verified' then
+      raise exception
+        'content_items %: evidence record % missing or not verified.',
+        new.id, new.evidence_record_id using errcode = 'check_violation';
+    end if;
+  end if;
+  return new;
+end;
+$$;
+
+create trigger trg_content_items_require_evidence_ins
+  before insert on content_items
+  for each row execute function require_verified_evidence_ins();
 
 -- ---------------------------------------------------------------------------
 -- 6. QA scores — also the dataset that governs graduated autonomy
@@ -607,7 +751,8 @@ insert into config (key, value, description) values
   ('traffic_drop_breaker',       '0.50',   'Pause and alert on a drop this large within 48h.'),
   ('conversion_drop_breaker',    '0.40',   'Pause new links to an offer on a w/w drop this large.'),
   ('reversal_rate_alert',        '0.25',   'Alert above this reversal rate for any offer.'),
-  ('max_articles_per_day',       '3',      'Publishing pace cap. Doc 07: slow and steady beats 200 pages in week one.')
+  ('max_articles_per_day',       '1',      'Publishing pace cap, enforced by W08. ~60 pages/90 days. See doc 09.'),
+  ('require_verified_evidence',  'true',   'Publish gate: every money page cites a verified evidence record. Also enforced by trigger.')
 on conflict (key) do nothing;
 
 insert into scoring_weights (version, weights, reason, active) values

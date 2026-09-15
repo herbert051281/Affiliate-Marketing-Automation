@@ -53,7 +53,13 @@ insert into niches (name, slug, status) values ('test','test','active');
 insert into programs (niche_id, merchant) select id,'M' from niches;
 insert into offers (program_id, name, destination_url) select id,'A','https://a.example' from programs;
 insert into offers (program_id, name, destination_url) select id,'B','https://b.example' from programs;
-insert into content_items (niche_id, title, slug, status) select id,'pub','pub','published' from niches;
+insert into tools (niche_id, name, slug) select id,'ToolA','tool-a' from niches;
+insert into evidence_records (niche_id, tool_id, kind, claim, source_kind, artifact_url, captured_at, status)
+  select n.id, t.id, 'pricing_history', 'ToolA Pro rose $129 to $149/tech/mo between 2025-03 and 2026-08',
+         'first_party_capture', 'https://cdn.example/shot.png', now(), 'verified'
+  from niches n, tools t;
+insert into content_items (niche_id, title, slug, status, evidence_record_id)
+  select n.id,'pub','pub','published', e.id from niches n, evidence_records e;
 insert into content_items (niche_id, title, slug, status) select id,'hidden','hidden','drafting' from niches;
 insert into links (slug, offer_id, content_item_id) select 'a', o.id, c.id from offers o, content_items c where o.name='A' and c.slug='pub';
 insert into links (slug, offer_id, content_item_id) select 'b', o.id, c.id from offers o, content_items c where o.name='B' and c.slug='pub';
@@ -92,6 +98,26 @@ for stmt in "delete from conversions" "insert into click_events (channel_code) v
   case "$out" in *"permission denied"*) ok "anon blocked: ${stmt:0:34}" ;; *) bad "anon could run: $stmt" ;; esac
 done
 check "anon reads published content only" "$(q "set role anon; select count(*) from published_content")" "1"
+
+echo "5. original-value publish gate (docs/07) — the database must refuse these"
+expect_fail() { # description, sql
+  out=$($PSQL -d app -tAc "$2" 2>&1 | head -1 || true)
+  case "$out" in *ERROR*) ok "blocked: $1" ;; *) bad "NOT blocked: $1 -> $out" ;; esac
+}
+expect_fail "publish with no evidence cited" \
+  "update content_items set status='published' where slug='hidden'"
+$PSQL -d app -c "insert into evidence_records (niche_id, kind, claim, source_kind, source_url, captured_at, status)
+  select id,'community_sentiment','34 of 120 reviews mention slow onboarding','community','https://e.example',now(),'draft' from niches;" >/dev/null
+expect_fail "publish citing an unverified evidence record" \
+  "update content_items set status='published', evidence_record_id=(select id from evidence_records where status='draft') where slug='hidden'"
+expect_fail "insert straight to published with no evidence" \
+  "insert into content_items (niche_id,title,slug,status) select id,'sneak','sneak','published' from niches"
+expect_fail "first-party evidence with no artifact to back it" \
+  "insert into evidence_records (niche_id,kind,claim,source_kind,captured_at) select id,'benchmark','setup took 47 minutes','our_test',now() from niches"
+# and the happy path must still work
+out=$($PSQL -d app -tAc "update content_items set status='published',
+  evidence_record_id=(select id from evidence_records where status='verified') where slug='hidden'; select 1" 2>&1 | head -1 || true)
+[ "$(echo "$out" | tr -d ' ')" = "1" ] && ok "publish allowed with verified evidence" || bad "verified evidence was blocked: $out"
 
 echo
 [ $fail -eq 0 ] && echo "ALL TESTS PASSED" || { echo "TESTS FAILED"; exit 1; }

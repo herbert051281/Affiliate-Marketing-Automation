@@ -49,7 +49,10 @@ docs, a database schema, prompts, and one script.
 3. **Build W01** — [`docs/13-w01-niche-scout-build.md`](docs/13-w01-niche-scout-build.md)
    has the node-by-node spec. Settles the open niche question.
 4. **Fill in the brand voice file.**
-5. Then follow [doc 09](docs/09-90-day-plan.md) week 1.
+5. **Capture your first 3 evidence records** before briefing any money page — a price
+   capture, a timed setup, a real screenshot. The content pipeline is gated on these, so
+   an empty `evidence_records` table means nothing publishes.
+6. Then follow [doc 09](docs/09-90-day-plan.md) week 1.
 
 ---
 
@@ -61,6 +64,14 @@ docs, a database schema, prompts, and one script.
 - **Short-form video doesn't fit the MSP niche.** If you go with MSP, W09's distribution
   mix becomes YouTube + LinkedIn + newsletter, not TikTok/Reels. And never post affiliate
   links to r/msp or r/sysadmin — mine them for research language only.
+- **Content targets are 40–60 pages in 90 days, not 250.** Verified Sept 2026: Google ran
+  three spam updates this year, and the August one named programmatic content, unreviewed
+  AI content and thin affiliate pages directly. Publishing 250 pages into a niche with
+  ~2,000 monthly searches is structurally scaled-content abuse. Break-even is ~1 sale a
+  month, so the volume was never needed. See [doc 07](docs/07-compliance-and-risk.md).
+- **Original value is a database row, not a prompt instruction.** A page cannot publish
+  without citing a verified `evidence_records` entry — enforced by trigger, because an AI
+  reviewer cannot tell a real benchmark from a convincing sentence about one.
 
 ---
 
@@ -80,7 +91,7 @@ README.md          navigation + the one-page picture
 HANDOFF.md         you are here
 CLAUDE.md          context for a new Claude session
 docs/01-13         strategy → setup runbook (see README table)
-db/schema.sql      24 tables + daily_metrics view — run this first
+db/schema.sql      25 tables + daily_metrics view — run this first
 db/test-schema.sh  schema regression tests (local Postgres, no network)
 prompts/           versioned AI prompts (00-brand-voice.md needs filling in)
 scripts/           tracked-redirect edge function

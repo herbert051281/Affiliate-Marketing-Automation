@@ -105,7 +105,13 @@ from it. Update the data, every page updates. That's leverage no content mill ha
 
 **Critical:** these pages must contain something only you have — your own pricing tracker,
 your own tested screenshots, your own scoring methodology. Generic AI-generated comparison
-pages are exactly what search engines now suppress. See [Compliance & Risk](07-compliance-and-risk.md).
+pages are exactly what search engines now suppress, and Google's August 2026 spam update
+named programmatic content at scale explicitly.
+
+The uncomfortable part: **the same generator produces the moat and the liability.** Fed
+your own verified data it is defensible; fed scraped vendor spec sheets it is a thin
+affiliate page. Nothing about the code tells them apart, so the distinction is enforced
+at the database instead — see [Compliance & Risk](07-compliance-and-risk.md).
 
 ---
 

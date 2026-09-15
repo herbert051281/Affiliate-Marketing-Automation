@@ -45,9 +45,11 @@ evening, with a working tracked link in it.
 
 ### Week 3 — Volume and channels
 
-- W09 Repurpose Engine → first 25 videos, posted across 3 platforms
+- W09 Repurpose Engine → first 25 videos. **YouTube + LinkedIn, not TikTok/Reels** — MSP
+  buyers aren't on short-form consumer platforms ([doc 10](10-niche-shortlist.md))
 - Social accounts set up with consistent branding, bio link → lead magnet
-- Publishing cadence: 3 articles/day, 5 videos/day
+- Publishing cadence: **1 article/day maximum**, 3–5 videos/day. The article cap is
+  `config.max_articles_per_day` and W08 enforces it — see the volume note below
 - **Apply to affiliate programs now** — the site has content to review ([doc 11](11-program-application-pack.md))
 - W12 Conversion Ingestion built for whichever program approves first
 - Daily digest (Gate B + C) running — start living the actual routine
@@ -65,8 +67,9 @@ the dashboard attributed to a channel.
 
 **Done when:** the Monday scorecard tells you something you didn't already know.
 
-**Month 1 targets:** ~60 articles, ~100 videos, 50–200 email subs, first commission
-likely (from video or email, not search).
+**Month 1 targets:** **12–18 articles**, ~100 videos, 50–200 email subs, first commission
+likely (from video or email, not search). Every article carries a verified evidence
+record — that, not the article count, is the number to watch.
 
 ---
 
@@ -78,11 +81,12 @@ Now the machine runs and **your job changes from building to deciding.**
 |---|---|
 | 5 | Affiliate CTR. Test link placement: above-fold comparison table vs inline CTA vs sticky bar. Pick the winner on data. |
 | 6 | Offer optimization. Swap underperformers. Ask affiliate managers for a rate bump — at volume they often say yes, and it's a 75% revenue lever ([doc 08](08-costs-and-unit-economics.md)). |
-| 7 | Programmatic comparison pages. Build the structured tool database, generate the `X vs Y` and `best X for Y` matrix. This is the SEO/AI-citation moat. |
+| 7 | Programmatic comparison pages. Build the `tools` database and generate the `X vs Y` / `best X for Y` matrix **only for pairs where you hold verified evidence** — your own rubric scores, your own pricing history. A programmatic page built from scraped vendor specs is a thin affiliate page and was named directly in the August 2026 spam update; the same generator produces both, so the evidence gate is what separates them. Generate fewer, backed pages. |
 | 8 | Autonomy step-up. Check QA-vs-human agreement; if ≥90%, move to the week 5–8 autonomy tier. Reduce your daily time to ~10 min. |
 
-**Month 2 targets:** 150+ articles, 300+ videos, 300–800 subs, consistent conversions,
-break-even on tooling plausible.
+**Month 2 targets:** **30–40 articles cumulative**, 300+ videos, 300–800 subs, consistent
+conversions, break-even on tooling plausible. At Atera's terms break-even is roughly one
+sale a month, so this is comfortably enough content to clear it.
 
 ---
 
@@ -90,7 +94,8 @@ break-even on tooling plausible.
 
 ### Week 9–10 — Double down on what works
 - W14 has 8 weeks of data now. Find the profitable cluster and produce 5× more of it.
-- Kill the bottom 30% of content — consolidate into the winners.
+- Kill the bottom 30% of content — consolidate into the winners. Fewer, stronger pages is
+  the direction of travel for rankings as well as for your time.
 - Add 2–3 more offers at different price points.
 
 ### Week 11 — Paid test (only if unit economics are proven)
@@ -108,8 +113,15 @@ Run the [go/no-go criteria](08-costs-and-unit-economics.md#go--no-go-criteria).
 | Conversions but no traffic | Distribution problem — increase video volume, add a channel |
 | Neither | Niche was wrong. Re-run W01, redeploy the machine. One week, not one quarter. |
 
-**Month 3 targets:** 250+ articles, 600+ videos, 1,000+ subs, $300–1,500/mo revenue
-depending on niche quality and offer value.
+**Month 3 targets:** **40–60 articles cumulative**, 600+ videos, 1,000+ subs,
+$300–1,500/mo revenue depending on niche quality and offer value.
+
+If that article count looks low against other affiliate playbooks: those playbooks assume
+a high-volume niche and one-time commissions, where you need hundreds of pages to clear
+costs. You need roughly **one sale a month** ([doc 08](08-costs-and-unit-economics.md)).
+Publishing 250 pages into a niche with ~2,000 monthly buyer-intent searches would mean
+most of them target near-zero-volume terms — which is structurally what Google's
+scaled-content enforcement looks for, whoever wrote them.
 
 ---
 
@@ -119,7 +131,12 @@ depending on niche quality and offer value.
 08:00  Open digest        · approve topic batch        (1 min)
 08:01  Review QA-flagged drafts                        (5-10 min)
 08:10  Act on any alert                                (0-5 min)
+08:12  Clear any evidence capture tasks                (0-15 min)
        ─── done ───
+
+The capture task is the one item that is genuinely yours and cannot be automated: take
+the screenshot, run the timing, record the price. It is also the only thing on this list
+that produces an asset a competitor cannot copy.
 
 Monday +20 min: kill/scale scorecard
 Month-end +45 min: reconcile network payouts vs dashboard
@@ -135,6 +152,8 @@ Quarterly +3 hrs: re-run niche scout, review prompts, re-read program TOS
 | Building content before tracking | You'll have 100 pages and no idea which earn |
 | Applying to programs before the site has content | Near-certain rejection, and re-applying is much harder than a clean first application |
 | Publishing 200 pages in week one | Fastest way to get filtered as scaled spam |
+| Treating article count as the success metric | The metric is pages-with-verified-evidence. An article you can't back is a liability, not an asset |
+| Writing a page before the evidence exists | The brief will park it and ask for a capture. Let it — that queue is the real constraint on the business |
 | Skipping the 5-draft manual read | Your prompts will be wrong and you'll scale the error |
 | Automating approvals from day one | You won't know what "good" looks like yet |
 | Widening the niche in month 2 | Halves your topical authority, doubles your work |

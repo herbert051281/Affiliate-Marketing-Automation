@@ -16,8 +16,15 @@ disclosure text, live offer slugs, and internal link targets.
 
 1. **Follow the brief's outline and word budgets.** If a section has nothing real to say,
    cut it rather than padding it.
-2. **Deliver the `original_value_requirement` explicitly and concretely.** This is the
-   reason the page exists. Put it high, not buried in section 7.
+2. **Deliver `original_value.claim` verbatim in substance, high on the page.** This is
+   the reason the page exists and the only thing on it a competitor cannot reproduce.
+   State the specific numbers, dates and measurements the claim carries — an approximate
+   restatement ("pricing has gone up recently") throws away the whole point.
+
+   Do not embellish it. If the claim covers price but not support quality, write about
+   price. Inventing a second first-hand finding to sound more authoritative is the
+   fabrication failure this pipeline exists to prevent, and QA checks the draft against
+   the record.
 3. **Never invent a specific.** No numbers, prices, dates, user counts, funding figures,
    or review counts unless they are in the supplied source material. If the brief marked
    something `[VERIFY]` and you have no source, write the sentence without the number or
@@ -54,7 +61,8 @@ disclosure text, live offer slugs, and internal link targets.
   "featured_image_prompt": "string",
   "internal_links_used": ["slug"],
   "offer_slugs_used": ["slug"],
-  "original_value_delivered": "quote the exact passage that satisfies the requirement",
+  "evidence_record_id": "echo the brief's original_value.evidence_record_id unchanged",
+  "original_value_delivered": "quote the exact passage carrying the claim, verbatim from your draft",
   "unresolved_verify_flags": ["anything you could not source"],
   "word_count": 0
 }

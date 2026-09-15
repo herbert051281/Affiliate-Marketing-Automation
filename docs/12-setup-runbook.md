@@ -40,7 +40,7 @@ Cloud, free tier. No admin rights needed.
    - Region: closest to you
    - **Save the database password** — it's shown once
 2. **SQL Editor** → paste all of [`db/schema.sql`](../db/schema.sql) → **Run**
-3. Verify: **Table Editor** should show 24 tables and the `channels` table seeded with 9 rows
+3. Verify: **Table Editor** should show 25 tables and the `channels` table seeded with 9 rows
 4. Sanity-check the lockdown — the schema revokes the default public grants, so this must
    return **zero rows**. If it returns any, the anon key (which ships in your site bundle)
    can read your commission data:
@@ -216,7 +216,7 @@ one query working.
 
 | Check | Expected |
 |---|---|
-| `psql "$SUPABASE_DB_URL" -c "\dt"` | 24 tables |
+| `psql "$SUPABASE_DB_URL" -c "\dt"` | 25 tables |
 | http://localhost:5678 | n8n loads, credentials saved |
 | `https://yourdomain.com/go/test` | redirects, and a `click_events` row appears |
 | Power BI refresh | completes without error |
