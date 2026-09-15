@@ -17,7 +17,7 @@ this system is a chain, and a weak link fails silently later.
 | 2 | Power BI connected to Postgres, executive page skeleton showing zeros |
 | 3 | n8n (or Power Automate) installed, credentials stored, W00 Watchdog running |
 | 3–4 | Run **W01 Niche Scout** → **Gate A: pick the niche** |
-| 4–5 | Run **W02 Offer Harvester** → apply to 5–8 programs (do this *now*; approval takes days) |
+| 4–5 | Run **W02 Offer Harvester** → create network accounts + email affiliate managers to introduce yourself. **Do not apply yet** — see [doc 11](11-program-application-pack.md) |
 | 5 | Privacy policy, terms, disclosure page, about page live |
 
 **Done when:** a test click on `/go/test` appears in Power BI the next morning, and
@@ -48,7 +48,8 @@ evening, with a working tracked link in it.
 - W09 Repurpose Engine → first 25 videos, posted across 3 platforms
 - Social accounts set up with consistent branding, bio link → lead magnet
 - Publishing cadence: 3 articles/day, 5 videos/day
-- W12 Conversion Ingestion built for whichever program approved first
+- **Apply to affiliate programs now** — the site has content to review ([doc 11](11-program-application-pack.md))
+- W12 Conversion Ingestion built for whichever program approves first
 - Daily digest (Gate B + C) running — start living the actual routine
 
 **Done when:** videos are posting without you, and the first affiliate clicks appear in
@@ -132,7 +133,7 @@ Quarterly +3 hrs: re-run niche scout, review prompts, re-read program TOS
 | Trap | Why it hurts |
 |---|---|
 | Building content before tracking | You'll have 100 pages and no idea which earn |
-| Applying to programs in week 4 | Approval takes 3–14 days; you'll be blocked |
+| Applying to programs before the site has content | Near-certain rejection, and re-applying is much harder than a clean first application |
 | Publishing 200 pages in week one | Fastest way to get filtered as scaled spam |
 | Skipping the 5-draft manual read | Your prompts will be wrong and you'll scale the error |
 | Automating approvals from day one | You won't know what "good" looks like yet |

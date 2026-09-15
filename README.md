@@ -47,6 +47,7 @@ That single spine is what makes the whole thing measurable and automatable.
 | 8 | [Costs & unit economics](docs/08-costs-and-unit-economics.md) | What it costs, what break-even requires, in numbers |
 | 9 | [90-day plan](docs/09-90-day-plan.md) | Week by week, with a "done" definition for each |
 | 10 | [Niche shortlist](docs/10-niche-shortlist.md) | 10 researched candidates, scored — with verified program terms |
+| 11 | [Program application pack](docs/11-program-application-pack.md) | Draft application answers, manager outreach email, response triage |
 
 **Build kit:** [`db/schema.sql`](db/schema.sql) · [`prompts/`](prompts/) · [`workflows/`](workflows/README.md)
 
