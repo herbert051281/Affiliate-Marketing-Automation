@@ -154,8 +154,8 @@ One piece of content becomes ~10 assets. Zero extra research.
 | | |
 |---|---|
 | **Trigger** | Daily 06:00 |
-| **Steps** | Join clicks + conversions + costs + publications → write `daily_metrics`, one row per (date, content_item, channel, offer) with: impressions, visits, aff_clicks, CTR, conversions, revenue, reversals, net_revenue, cost, profit |
-| **Writes** | `daily_metrics` |
+| **Steps** | 1. **Pull yesterday's visits from the site analytics API** (GA4 / Plausible / Vercel Analytics) → upsert `page_view_daily`, keyed on (date, content_item, channel). Clicks are yours; visits are not, and without this step Affiliate CTR and RPM cannot be computed at all<br>2. Pull the ESP's list stats → upsert `email_list_daily`<br>3. Refresh the `daily_metrics` rollup: one row per (date, content_item, channel, offer) with visits, aff_clicks, conversions, gross_revenue, reversals, net_revenue, pending_revenue, cost, profit |
+| **Writes** | `page_view_daily`, `email_list_daily`, `daily_metrics` |
 
 ---
 

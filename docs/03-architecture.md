@@ -123,8 +123,17 @@ Rule: **measurement infrastructure ships before the thing it measures.**
 
 - All API keys in the orchestrator's credential store or env vars — never in workflow JSON
   or prompt text. Nothing secret gets committed to this repo.
-- Supabase RLS on: the public site uses the anon key with read-only policies on published
-  content only. Writes go through the service role, used only by the orchestrator.
+- **Supabase RLS on every table, no exceptions.** The anon key is public — it ships in
+  the browser bundle — and Supabase grants the `anon` role full CRUD on public-schema
+  tables by default. A table with RLS *disabled* is therefore world-readable and
+  world-writable, not private. Verified against a live Postgres with stock Supabase
+  grants: with RLS off, `anon` could read the commission data in `conversions` and
+  `DELETE` every row in it. `db/schema.sql` revokes those default grants, enables
+  (and forces) RLS everywhere, and exposes exactly one read-only view of published
+  content. Writes go through the service role, used only by the orchestrator.
+- The public site never needs the `offers` table: `destination_url` carries your
+  affiliate ID and `epc_observed` is your measured earnings. The `/go` redirector
+  resolves both server-side with the service role.
 - Separate the tracking domain from the money site if you can — a redirector on the same
   domain is fine, but keep the click-logging endpoint rate-limited.
 - Back up the Postgres database nightly to object storage. The database *is* the business;
