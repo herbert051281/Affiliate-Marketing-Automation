@@ -80,7 +80,8 @@ README.md          navigation + the one-page picture
 HANDOFF.md         you are here
 CLAUDE.md          context for a new Claude session
 docs/01-13         strategy → setup runbook (see README table)
-db/schema.sql      14 tables + daily_metrics view — run this first
+db/schema.sql      24 tables + daily_metrics view — run this first
+db/test-schema.sh  schema regression tests (local Postgres, no network)
 prompts/           versioned AI prompts (00-brand-voice.md needs filling in)
 scripts/           tracked-redirect edge function
 workflows/         n8n notes; exported workflow JSON goes here
