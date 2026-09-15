@@ -1,0 +1,18 @@
+# secrets — never commit
+.env
+.env.*
+*.key
+*.pem
+credentials.json
+**/credentials/**
+
+# orchestrator exports may embed credentials — scrub before committing
+workflows/*.local.json
+
+# local
+node_modules/
+.DS_Store
+*.log
+.vercel
+dist/
+build/
