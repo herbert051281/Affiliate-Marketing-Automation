@@ -35,6 +35,11 @@ That single spine is what makes the whole thing measurable and automatable.
 
 ## Read in this order
 
+> **New to affiliate marketing?** Read
+> **[doc 14 — Operator's Guide](docs/14-operators-guide.md)** first. Every other doc here
+> assumes you already know the vocabulary; that one assumes nothing, and explains what the
+> job actually is day to day.
+
 | # | Doc | What you get |
 |---|-----|--------------|
 | 1 | [Strategy & business model](docs/01-strategy-and-model.md) | Which affiliate model to run and why; what "profitable fast" realistically means |
@@ -50,6 +55,7 @@ That single spine is what makes the whole thing measurable and automatable.
 | 11 | [Program application pack](docs/11-program-application-pack.md) | Draft application answers, manager outreach email, response triage |
 | 12 | [Setup runbook](docs/12-setup-runbook.md) | Install steps with real commands — Supabase, n8n, Vercel, Power BI |
 | 13 | [Build W01](docs/13-w01-niche-scout-build.md) | Node-by-node build for the first workflow |
+| **14** | **[Operator's Guide](docs/14-operators-guide.md)** | **Zero-knowledge manual: the vocabulary, how money actually reaches you, your daily/weekly routine, every decision explained** |
 
 **Build kit:** [`db/schema.sql`](db/schema.sql) · [`prompts/`](prompts/) · [`workflows/`](workflows/README.md) · [`.env.example`](.env.example) · [`docker-compose.yml`](docker-compose.yml)
 

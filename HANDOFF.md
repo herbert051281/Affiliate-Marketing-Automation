@@ -5,6 +5,9 @@
 
 Read this first on a new machine. Then [`docs/12-setup-runbook.md`](docs/12-setup-runbook.md).
 
+**New to affiliate marketing?** [`docs/14-operators-guide.md`](docs/14-operators-guide.md)
+explains the vocabulary, the money flow, and the day-to-day job from zero.
+
 ---
 
 ## What this is
@@ -90,7 +93,7 @@ docs, a database schema, prompts, and one script.
 README.md          navigation + the one-page picture
 HANDOFF.md         you are here
 CLAUDE.md          context for a new Claude session
-docs/01-13         strategy → setup runbook (see README table)
+docs/01-14         strategy → setup runbook → operator's guide (see README table)
 db/schema.sql      25 tables + daily_metrics view — run this first
 db/test-schema.sh  schema regression tests (local Postgres, no network)
 prompts/           versioned AI prompts (00-brand-voice.md needs filling in)
