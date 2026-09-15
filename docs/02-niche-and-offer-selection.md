@@ -20,6 +20,13 @@ NicheScore = (0.30 × MonetizationDepth)
 
 Each component is normalized 0–100.
 
+> **CompetitionGap is a gate as well as a weighted term.** A weighted sum lets a superb
+> monetization score paper over a SERP you cannot enter — and a niche you cannot rank in
+> is worth zero however well it pays. So the disqualifier below is applied *before* the
+> score is considered, not traded off against it. This is not a hypothetical: the two
+> best-paying candidates in [doc 10](10-niche-shortlist.md) score in the high 60s on this
+> formula and are still completely unwinnable.
+
 | Component | How it's computed | Data source |
 |---|---|---|
 | **MonetizationDepth** | # of programs with ≥20% recurring or ≥$100 payout, × avg cookie days, × avg EPC | Affiliate networks (Impact, PartnerStack, ShareASale), merchant pages |
@@ -33,7 +40,9 @@ Each component is normalized 0–100.
 - YMYL categories (health claims, medical, financial advice, legal) — regulatory exposure
   and a much higher content quality bar. Not a first business.
 - Niches where the only programs are Amazon or sub-5% one-time commissions.
-- Anything with an obvious brand-dominated SERP (top 10 all DR 80+ publishers).
+- **`CompetitionGap < 30` — the SERP is not enterable by a new site.** Fewer than 3 of the
+  top 10 slots held by DR<40 sites, forums or Reddit means the incumbents are publishers
+  you cannot displace, whatever the niche pays.
 - Gambling, adult, crypto trading, supplements, MLM. Payment processors and ad networks
   will cut you off, and program TOS are minefields.
 - Seasonal-only niches (>70% of volume in one quarter).

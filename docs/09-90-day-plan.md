@@ -20,8 +20,10 @@ this system is a chain, and a weak link fails silently later.
 | 4–5 | Run **W02 Offer Harvester** → create network accounts + email affiliate managers to introduce yourself. **Do not apply yet** — see [doc 11](11-program-application-pack.md) |
 | 5 | Privacy policy, terms, disclosure page, about page live |
 
-**Done when:** a test click on `/go/test` appears in Power BI the next morning, and
-program applications are submitted.
+**Done when:** a test click on `/go/test` appears in Power BI the next morning, and the
+affiliate-manager intro emails are sent. **Applications come in week 3**, once the site has
+content — see [doc 11](11-program-application-pack.md). Applying to an empty site spends
+your one clean shot.
 
 ### Week 2 — The content pipeline
 

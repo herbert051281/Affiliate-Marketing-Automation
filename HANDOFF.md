@@ -27,7 +27,7 @@ docs, a database schema, prompts, and one script.
 | Database | Supabase (Postgres) | [doc 03](docs/03-architecture.md) |
 | Site | Next.js on Vercel | [doc 03](docs/03-architecture.md) |
 | Reporting | Power BI direct to Postgres | [doc 06](docs/06-measurement.md) |
-| Niche (provisional) | **MSP / IT operations tooling** — score 78 | [doc 10](docs/10-niche-shortlist.md) |
+| Niche (provisional) | **MSP / IT operations tooling** — score 84.2 | [doc 10](docs/10-niche-shortlist.md) |
 | Anchor offer (provisional) | Atera — 20% recurring, 60-day cookie | [doc 10](docs/10-niche-shortlist.md) |
 
 ## Decisions still open
@@ -72,6 +72,11 @@ docs, a database schema, prompts, and one script.
   AI content and thin affiliate pages directly. Publishing 250 pages into a niche with
   ~2,000 monthly searches is structurally scaled-content abuse. Break-even is ~1 sale a
   month, so the volume was never needed. See [doc 07](docs/07-compliance-and-risk.md).
+- **The doc 10 scores were recomputed.** The originally published numbers didn't reproduce
+  from doc 02's own formula — all understated, rows 9 and 10 by 20+ points. MSP still wins
+  (84.2, not 78) so the niche call is unchanged, but competition is now a hard gate
+  (`Gap < 30` auto-rejects) rather than a 20% weighted term, and **the runner-up is no
+  longer settled** — W01 must measure workflow automation's competition gap.
 - **Original value is a database row, not a prompt instruction.** A page cannot publish
   without citing a verified `evidence_records` entry — enforced by trigger, because an AI
   reviewer cannot tell a real benchmark from a convincing sentence about one.
