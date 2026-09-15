@@ -9,10 +9,37 @@ The things that actually kill automated affiliate businesses, ranked by how ofte
 Search engines explicitly target mass-produced content that adds no original value,
 regardless of how it was produced. AI isn't the problem; **undifferentiated** is the problem.
 
+### Where enforcement actually stands (verified Sept 2026)
+
+Google does not penalize content for being AI-generated — it never has. It penalizes
+three named things, whoever or whatever produced them: **scaled content abuse** (many
+pages made mainly to manipulate rankings, little value added), **thin affiliate pages**
+(aggregating links or product data without original information), and **site reputation
+abuse** (not relevant here).
+
+What matters is that enforcement stepped up hard this year: **three spam updates in 2026**
+— March, June, and August. The August update (18–21 Aug, a SpamBrain upgrade) explicitly
+targeted:
+
+- programmatic content produced at scale with limited editorial oversight
+- AI content published without meaningful human review
+- thin affiliate pages that aggregate product data without original information
+
+Read that list against this repo's design and three items land close to home: the
+programmatic comparison pages ([doc 01](01-strategy-and-model.md) calls them the moat),
+the graduated auto-publish schedule ([doc 05](05-approval-and-autonomy.md)), and
+comparison tables as the core page type. What survived were sites with original reviews,
+real testing, genuine comparisons and actual pricing data. Google's systems now look
+specifically for evidence of **first-hand experience** — original images, specific
+use-case detail, the things you only know from having used the product.
+
+Recovery from a hit takes months at best. Treat this as a prevention problem.
+
 ### The mitigation is structural, not stylistic
 
 Every money page must carry at least one thing that cannot be generated from public text.
-The brief builder (W05) assigns it, and QA (W07) enforces it as a hard floor:
+The brief builder (W05) cites it, QA (W07) verifies it, and **the database refuses to
+publish without it**:
 
 | Original-value type | How to produce it at scale |
 |---|---|
@@ -24,10 +51,40 @@ The brief builder (W05) assigns it, and QA (W07) enforces it as a hard floor:
 | **Your own experience** | The `× 1.15` niche bonus in doc 02 exists for exactly this reason |
 
 A comparison page built on your own structured tool database *is* original data. That's
-why the programmatic approach in doc 01 is the moat and not the risk.
+why the programmatic approach in doc 01 is the moat and not the risk — **but only when
+the data underneath it is yours.** A page generated from scraped vendor spec sheets is a
+thin affiliate page, and the same generator produces both. The evidence gate is the only
+thing that distinguishes them, which is why it is enforced rather than recommended.
+
+### The gate, concretely
+
+The rule used to be "the brief assigns an original-value requirement and QA checks the
+draft contains it." That does not work, for a reason worth being blunt about: **a
+fabricated benchmark reads exactly like a real one.** Asking a model whether a draft
+"contains original value" measures how confident the writing sounds, not whether anyone
+ran the test. A draft claiming "in our testing, setup took 47 minutes" passes either way.
+
+So the claim is a database row, not a sentence:
+
+1. You (or a capture workflow) record a finding in `evidence_records` — a tracked price
+   change, a timed setup, a hit rate limit, a quantified community complaint — with the
+   artifact that backs it, and mark it `verified`.
+2. W05 cites that row's `id` on the brief. If nothing suitable exists it raises a capture
+   task and **parks the topic** rather than inventing a requirement.
+3. W06 writes the page around the record's exact claim.
+4. W07 checks the draft carries that claim faithfully — verifying a citation, not judging
+   prose — and hard-fails a draft making first-hand claims it was given no evidence for.
+5. `content_items` cannot enter `published` without citing a verified record. This is a
+   database trigger, so it holds at 2am in week nine when the queue is backed up and
+   nobody is reading this document.
+
+The useful side effect: **publishing rate becomes limited by the rate you produce real
+data.** That is the correct ceiling, and it is why the volume targets in
+[doc 09](09-90-day-plan.md) are 40–60 pages in 90 days rather than 250.
 
 ### Also
-- Publish **slowly and steadily**, not 200 pages week one. 3–5/day maximum for a new site.
+- Publish **slowly and steadily**. `config.max_articles_per_day` defaults to **1**, and
+  W08 enforces it.
 - Real author identity, real about page, real contact. Anonymous thin sites get filtered.
 - Don't delete-and-reindex churn. Consolidate losers into winners instead.
 
@@ -136,6 +193,8 @@ Monitor the *inputs* (did the workflow run?) not just the outputs (is revenue up
 - [ ] Privacy policy, terms, affiliate disclosure page live
 - [ ] Disclosure renders above the fold on every money page (template-level, not per-post)
 - [ ] Every program's TOS parsed into `programs` flags
+- [ ] At least 3 verified `evidence_records` exist before the first money page is briefed
+- [ ] Publish gate tested: try to publish a page with no evidence and confirm it fails
 - [ ] Cookie consent banner if targeting EU/UK
 - [ ] Real about page with real identity and contact
 - [ ] Backup offer configured for every primary offer

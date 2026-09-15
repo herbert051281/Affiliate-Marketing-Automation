@@ -61,9 +61,9 @@ Runs once at setup, then quarterly to spot new opportunities.
 | | |
 |---|---|
 | **Trigger** | On `content_items.status = approved_topic` |
-| **Steps** | 1. Scrape top 10 ranking pages → structure, headings, word count, what they cover<br>2. Identify **coverage gaps** — what nobody answers<br>3. Pull the relevant offer(s) + their allowed disclosure text<br>4. Select internal link targets from existing published content<br>5. Define the **original-value requirement** for this piece: what data/test/screenshot must be included (see [Compliance](07-compliance-and-risk.md)) |
-| **Writes** | `content_items.brief` |
-| **Gate** | none (briefs are cheap; QA happens at draft) |
+| **Steps** | 1. Scrape top 10 ranking pages → structure, headings, word count, what they cover<br>2. Identify **coverage gaps** — what nobody answers<br>3. Pull the relevant offer(s) + their allowed disclosure text<br>4. Select internal link targets from existing published content<br>5. **Cite a verified `evidence_records` row** as the piece's original-value anchor. If nothing fits, emit an `evidence_request` instead and park the topic — see [Compliance](07-compliance-and-risk.md) |
+| **Writes** | `content_items.brief`, `content_items.evidence_record_id`; `evidence_records` (status `draft`) when a capture is requested |
+| **Gate** | none for the brief itself. A brief that returns `evidence_request.needed` raises a **capture task** in your digest — the topic does not advance until the data exists |
 | **Prompt** | [`prompts/02-brief-builder.md`](../prompts/02-brief-builder.md) |
 
 ---
@@ -83,13 +83,20 @@ Runs once at setup, then quarterly to spot new opportunities.
 | | |
 |---|---|
 | **Trigger** | On draft complete |
-| **Steps** | Score 0–100 on six axes, each with a hard floor:<br>• **Factual verification** — every claim, price, and feature checked against a live source; fabricated specifics are the #1 failure mode of AI content<br>• **Original value** — does it contain the required first-hand data/test/screenshot?<br>• **Brand voice** match<br>• **Compliance** — disclosure present? claims within program TOS? no prohibited language?<br>• **Link integrity** — every `/go/` slug resolves to an active offer<br>• **Differentiation** — semantic similarity vs the top-10 pages; too similar = reject |
+| **Steps** | Score 0–100 on six axes, each with a hard floor:<br>• **Factual verification** — every claim, price, and feature checked against a live source; fabricated specifics are the #1 failure mode of AI content<br>• **Original value** — does the draft carry the cited `evidence_records` claim, with its actual numbers? Verified against the record, not judged from the prose<br>• **Brand voice** match<br>• **Compliance** — disclosure present? claims within program TOS? no prohibited language?<br>• **Link integrity** — every `/go/` slug resolves to an active offer<br>• **Differentiation** — semantic similarity vs the top-10 pages; too similar = reject |
 | **Writes** | `qa_scores` |
 | **Gate** | **Gate C** — score ≥ threshold *and* no hard-floor breach → queued for auto-publish. Otherwise it lands in your review queue with the specific failures listed. |
 | **Prompt** | [`prompts/04-qa-reviewer.md`](../prompts/04-qa-reviewer.md) |
 
 > The QA agent must be a **different model call with no memory of writing the draft**, and
 > it must be told to look for reasons to reject. A writer grading its own homework is theatre.
+
+> **Why original value is checked against a record, not read from the page.** A fabricated
+> benchmark reads exactly like a real one, so asking a model "does this contain original
+> value?" measures writing confidence, not truth. Instead W05 cites a verified row in
+> `evidence_records`, W07 checks the draft carries that claim, and the database refuses to
+> publish anything with no verified record cited. The gate is SQL, not persuasion — the
+> same reasoning as TOS-as-booleans in [doc 02](02-niche-and-offer-selection.md).
 
 ---
 
@@ -99,7 +106,7 @@ Runs once at setup, then quarterly to spot new opportunities.
 | | |
 |---|---|
 | **Trigger** | On approved draft |
-| **Steps** | 1. Commit content to the site repo / push via API → Vercel builds<br>2. Ping sitemap, request indexing<br>3. Add to internal link graph — and **update 3 older related posts** to link to it (compounding internal links is free ranking)<br>4. Schedule the distribution chain below, staggered over 5 days |
+| **Steps** | 0. Check today's publish count against `config.max_articles_per_day` (default **1**) — over the cap, requeue for tomorrow rather than batching out<br>1. Commit content to the site repo / push via API → Vercel builds<br>2. Ping sitemap, request indexing<br>3. Add to internal link graph — and **update 3 older related posts** to link to it (compounding internal links is free ranking)<br>4. Schedule the distribution chain below, staggered over 5 days |
 | **Writes** | `publications` |
 
 ---
@@ -110,7 +117,7 @@ One piece of content becomes ~10 assets. Zero extra research.
 | | |
 |---|---|
 | **Trigger** | On publish |
-| **Steps** | 1. Extract 5 distinct hooks/angles from the article<br>2. For each: 30–45s vertical video script → voiceover → footage/B-roll → captions → export<br>3. Generate 3 text posts (LinkedIn/X) with different angles<br>4. Generate 1 carousel/infographic<br>5. Schedule across TikTok, Reels, Shorts, LinkedIn, X over 5 days at channel-optimal times<br>6. Every CTA points to the **lead magnet**, with `?c={channel}` tracking |
+| **Steps** | 1. Extract 5 distinct hooks/angles from the article<br>2. For each: 30–45s vertical video script → voiceover → footage/B-roll → captions → export<br>3. Generate 3 text posts (LinkedIn/X) with different angles<br>4. Generate 1 carousel/infographic<br>5. Schedule across the niche's actual channels over 5 days at channel-optimal times. **For MSP this is YouTube + LinkedIn, not TikTok/Reels** — the channel set is a config value, not a constant ([doc 10](10-niche-shortlist.md))<br>6. Every CTA points to the **lead magnet**, with `?c={channel}` tracking |
 | **Writes** | `assets`, `publications` |
 | **Gate** | none after week 4 (see [graduated autonomy](05-approval-and-autonomy.md)); Gate C during weeks 1–4 |
 | **Prompt** | [`prompts/05-video-script.md`](../prompts/05-video-script.md) |
@@ -154,8 +161,8 @@ One piece of content becomes ~10 assets. Zero extra research.
 | | |
 |---|---|
 | **Trigger** | Daily 06:00 |
-| **Steps** | Join clicks + conversions + costs + publications → write `daily_metrics`, one row per (date, content_item, channel, offer) with: impressions, visits, aff_clicks, CTR, conversions, revenue, reversals, net_revenue, cost, profit |
-| **Writes** | `daily_metrics` |
+| **Steps** | 1. **Pull yesterday's visits from the site analytics API** (GA4 / Plausible / Vercel Analytics) → upsert `page_view_daily`, keyed on (date, content_item, channel). Clicks are yours; visits are not, and without this step Affiliate CTR and RPM cannot be computed at all<br>2. Pull the ESP's list stats → upsert `email_list_daily`<br>3. Refresh the `daily_metrics` rollup: one row per (date, content_item, channel, offer) with visits, aff_clicks, conversions, gross_revenue, reversals, net_revenue, pending_revenue, cost, profit |
+| **Writes** | `page_view_daily`, `email_list_daily`, `daily_metrics` |
 
 ---
 

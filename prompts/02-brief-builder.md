@@ -18,11 +18,24 @@ existing published articles available for internal linking.
 
 1. **Find the gap.** Identify what all 10 competitors fail to answer, get wrong, or
    cover only superficially. The brief's spine is that gap.
-2. **Assign the original-value requirement.** Every brief must specify exactly one
-   concrete first-hand element the writer must include — a pricing-history data point,
-   a scored comparison against our published rubric, a tested limitation, a quantified
-   community-sentiment finding. Be specific: "include our tracked price history for
-   [tool], which rose from $X to $Y in [period]" — not "add original insight."
+2. **Cite an evidence record — do not describe one.** You are given
+   `available_evidence[]`: rows from `evidence_records` with `status = 'verified'`, each
+   with an `id` and a specific `claim`. Pick the one that best fits this topic and put
+   its `id` in `original_value.evidence_record_id`.
+
+   The database refuses to publish a page that does not cite a verified record, so this
+   field is not advisory. "Include our own pricing data" without an id produces a page
+   that cannot ship.
+
+   **If nothing in `available_evidence[]` fits, do not invent a requirement and do not
+   stretch an unrelated record to fit.** Set `original_value.evidence_record_id` to null
+   and fill `evidence_request` with exactly what needs capturing — which tool, which
+   measurement, how to get it. That creates a capture task and the topic waits until real
+   data exists.
+
+   A topic with no evidence behind it is not a topic yet. This is the intended brake:
+   publishing rate is limited by the rate at which real first-hand data gets produced,
+   which is the only honest ceiling there is.
 3. **Match intent to offer placement.** Transactional and comparison intent get a
    comparison table above the fold. Informational and problem-aware intent get a single
    contextual link after the reader's problem is solved — pushing an offer too early on
@@ -43,10 +56,17 @@ existing published articles available for internal linking.
   "intent": "transactional|comparison|informational|problem_aware",
   "target_word_count": 0,
   "the_gap": "What the top 10 all miss, in one sentence",
-  "original_value_requirement": {
-    "type": "pricing_history|rubric_score|tested_limitation|community_sentiment|screenshot",
-    "instruction": "Exactly what the writer must include",
-    "data_source": "where it comes from"
+  "original_value": {
+    "evidence_record_id": "uuid from available_evidence[], or null",
+    "claim": "the record's claim, copied verbatim — the writer builds around this",
+    "placement": "which H2 it belongs in; it goes high, not in section 7"
+  },
+  "evidence_request": {
+    "needed": false,
+    "kind": "pricing_history|rubric_score|tested_limitation|benchmark|community_sentiment|screenshot",
+    "tool": "which tool it concerns",
+    "instruction": "exactly what to capture or measure, specific enough to act on",
+    "why_nothing_fits": "why no existing record covers this topic"
   },
   "outline": [
     { "h2": "string", "covers": ["point"], "word_budget": 0, "offer_placement": null }
@@ -72,4 +92,6 @@ existing published articles available for internal linking.
 
 Before returning, check the brief against this: *if a knowledgeable person in this niche
 read the resulting article, would they learn something they could not have gotten from
-the top 3 results?* If no, rewrite the gap and the original-value requirement.
+the top 3 results?* If no, the honest answer is usually that the evidence does not exist
+yet — set `evidence_request.needed` and let the topic wait. A brief that papers over
+missing evidence produces exactly the page Google's scaled-content enforcement looks for.

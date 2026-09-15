@@ -40,13 +40,25 @@ Cloud, free tier. No admin rights needed.
    - Region: closest to you
    - **Save the database password** — it's shown once
 2. **SQL Editor** → paste all of [`db/schema.sql`](../db/schema.sql) → **Run**
-3. Verify: **Table Editor** should show 14 tables and the `channels` table seeded with 8 rows
-4. **Settings → API** — copy into `.env`:
+3. Verify: **Table Editor** should show 25 tables and the `channels` table seeded with 9 rows
+4. Sanity-check the lockdown — the schema revokes the default public grants, so this must
+   return **zero rows**. If it returns any, the anon key (which ships in your site bundle)
+   can read your commission data:
+
+   ```sql
+   select tablename from pg_tables
+   where schemaname = 'public' and not rowsecurity;
+   ```
+5. **Settings → API** — copy into `.env`:
    - `SUPABASE_URL`
-   - `SUPABASE_ANON_KEY` (public — safe in the site's client code)
+   - `SUPABASE_ANON_KEY` (public — it ships in the site bundle, so treat it as published)
    - `SUPABASE_SERVICE_ROLE_KEY` (**secret** — orchestrator only, never client-side)
-5. **Settings → Database → Connection string → Transaction pooler** (port **6543**)
+6. **Settings → Database → Connection string → Transaction pooler** (port **6543**)
    → `SUPABASE_DB_URL`
+
+> Want to check the schema before touching Supabase? `./db/test-schema.sh` runs it against
+> a throwaway local Postgres and asserts the rollup arithmetic and the anon lockdown.
+> No network, no Docker.
 
 > ⚠️ Use the **pooler** URI (6543) for n8n, not the direct connection (5432). n8n opens
 > more connections than you'd expect and will exhaust the direct pool.
@@ -204,7 +216,7 @@ one query working.
 
 | Check | Expected |
 |---|---|
-| `psql "$SUPABASE_DB_URL" -c "\dt"` | 14 tables |
+| `psql "$SUPABASE_DB_URL" -c "\dt"` | 25 tables |
 | http://localhost:5678 | n8n loads, credentials saved |
 | `https://yourdomain.com/go/test` | redirects, and a `click_events` row appears |
 | Power BI refresh | completes without error |
@@ -229,5 +241,7 @@ the niche question with real data.
 | n8n credentials gone after restart | `N8N_ENCRYPTION_KEY` not persisted | Set it explicitly; re-enter credentials |
 | Power BI can't see PostgreSQL | Npgsql GAC option not ticked | Re-run the MSI with it enabled |
 | Redirect works, no `click_events` row | Service role key missing/wrong in Vercel | Check `vercel env ls`, redeploy |
+| Redirect works, still no `click_events` row | The insert isn't being awaited. supabase-js builders are lazy — `void supabase.from(...).insert(...)` sends no request at all | Await it, or hand it to `waitUntil` as `scripts/redirect-edge-function.ts` does |
+| `visits` empty in Power BI, clicks fine | Analytics ingestion (W13 step 1) not built — clicks are yours, visits come from GA4/Plausible | Build the `page_view_daily` upsert; without it Affiliate CTR and RPM can't be computed |
 | Cron jobs don't fire overnight | Machine sleeping | Move n8n to the VPS |
 | Anthropic 401 in n8n | Key pasted with trailing whitespace | Re-paste into the credential store |

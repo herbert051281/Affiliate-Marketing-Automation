@@ -58,25 +58,48 @@ Refresh daily after W13 completes (~06:30).
   ┌────────────┐            │            ┌─────────────┐
   │dim_content ├────────────┼────────────┤  dim_offer  │
   └────────────┘            │            └─────────────┘
-                     ┌──────┴────────┐
-                     │ fact_metrics  │   (grain: date × content × channel × offer)
-                     │  visits       │
-                     │  aff_clicks   │   ┌──────────────┐
-                     │  conversions  ├───┤ dim_channel  │
-                     │  revenue      │   └──────────────┘
-                     │  reversals    │
-                     │  cost         │
-                     └───────────────┘
+                     ┌──────┴─────────┐
+                     │  fact_metrics  │  (grain: date × content × channel × offer)
+                     │  visits        │
+                     │  aff_clicks    │   ┌──────────────┐
+                     │  conversions   ├───┤ dim_channel  │
+                     │  gross_revenue │   └──────────────┘
+                     │  reversals     │
+                     │  pending_revenue│
+                     │  cost          │
+                     └────────────────┘
 ```
 
 Build `dim_date` as a proper marked date table. Everything else follows normal star rules.
 
+**Where `visits` comes from.** Clicks are yours (the redirector writes them); visits
+are not — they come from the site analytics provider (GA4, Plausible or Vercel
+Analytics) and land in `page_view_daily`, ingested by W13. Without that ingestion
+`visits` is zero and **Affiliate CTR and RPM — the two measures this whole document
+is built on — are undefined.** Wire it up in week 1, alongside the redirector.
+
+A pageview cannot be attributed to a single offer, so visits attach to the
+(date × content × channel) grain with a null offer. Totals are correct when summed;
+slicing *by offer* correctly shows no visits. Read Affiliate CTR at content or
+channel level, never per offer.
+
 ### Core measures (DAX)
 
+> **Revenue column semantics** (see the header comment on `daily_metrics`):
+> `gross_revenue` includes commissions that were later reversed, `reversals` is
+> that reversed portion, so `net_revenue = gross_revenue - reversals` is what you
+> keep. Subtracting reversals from an approved-only figure would deduct them
+> twice and understate net revenue by exactly the reversed amount.
+> `pending_revenue` is reported separately and never counted as earned — under
+> net-30/60 terms a real sale sits pending for weeks, and treating it as revenue
+> is how people talk themselves into scaling a losing offer.
+
 ```dax
-Net Revenue = SUM(fact_metrics[revenue]) - SUM(fact_metrics[reversals])
+Net Revenue = SUM(fact_metrics[gross_revenue]) - SUM(fact_metrics[reversals])
 
 Profit = [Net Revenue] - SUM(fact_metrics[cost])
+
+Pending Revenue = SUM(fact_metrics[pending_revenue])   -- booked, not yet earned
 
 Affiliate CTR = DIVIDE(SUM(fact_metrics[aff_clicks]), SUM(fact_metrics[visits]))
 
@@ -86,7 +109,7 @@ EPC = DIVIDE([Net Revenue], SUM(fact_metrics[aff_clicks])) * 100
 
 RPM = DIVIDE([Net Revenue], SUM(fact_metrics[visits])) * 1000
 
-Reversal Rate = DIVIDE(SUM(fact_metrics[reversals]), SUM(fact_metrics[revenue]))
+Reversal Rate = DIVIDE(SUM(fact_metrics[reversals]), SUM(fact_metrics[gross_revenue]))
 
 -- Content maturity matters: a 2-week-old page hasn't had its chance yet
 Days Since Publish =

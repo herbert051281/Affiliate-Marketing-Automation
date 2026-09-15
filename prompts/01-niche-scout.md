@@ -30,7 +30,9 @@ Multipliers: `×1.15` operator domain expertise · `×1.15` lifetime/recurring c
 
 - YMYL: health, medical, financial advice, legal
 - Only monetizable via Amazon Associates or sub-5% one-time commissions
-- Top 10 SERP entirely DR 80+ publishers
+- `CompetitionGap < 30` — fewer than 3 of the top 10 slots held by DR<40 sites, forums,
+  Reddit or YouTube. Not enterable by a new site, whatever the niche pays. Reject before
+  scoring, never trade it off against monetization
 - Gambling, adult, crypto trading, supplements, MLM
 - >70% of search volume concentrated in one quarter (seasonal)
 

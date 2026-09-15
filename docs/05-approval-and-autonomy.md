@@ -87,6 +87,14 @@ a stage automatically.
 That's the difference between "I automated it" and "I automated it and it still works in
 six months."
 
+> **What auto-publish does and does not cover.** Even at the week 9+ tier, a page still
+> cannot publish without citing a verified evidence record — that gate is in the database
+> and no autonomy tier relaxes it. What graduates is your review of *writing quality*, not
+> the requirement for real first-hand data. Google's August 2026 spam update named
+> "AI content published without meaningful human review" directly
+> ([doc 07](07-compliance-and-risk.md)); the evidence capture is that human step, and it
+> stays yours permanently.
+
 ### Things that never graduate
 
 - Anything touching money out (ad spend, tool purchases)
@@ -108,6 +116,7 @@ Automatic pause conditions. The system stops and waits for you:
 | API/tool spend > 150% of daily budget | Pause the pipeline |
 | Any program sends a warning email | **Pause everything for that program**, alert immediately |
 | Same QA failure type 3× in a week | Pause, and surface the pattern |
+| Unverified-evidence publish attempts 3× in a week | Pause briefing — the topic queue has outrun the evidence you actually hold |
 
 Build these on day one. They cost an hour and they are the reason you'll still have a
 business in month twelve.
