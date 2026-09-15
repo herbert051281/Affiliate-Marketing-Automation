@@ -46,6 +46,7 @@ That single spine is what makes the whole thing measurable and automatable.
 | 7 | [Compliance & risk](docs/07-compliance-and-risk.md) | The things that actually kill affiliate businesses |
 | 8 | [Costs & unit economics](docs/08-costs-and-unit-economics.md) | What it costs, what break-even requires, in numbers |
 | 9 | [90-day plan](docs/09-90-day-plan.md) | Week by week, with a "done" definition for each |
+| 10 | [Niche shortlist](docs/10-niche-shortlist.md) | 10 researched candidates, scored — with verified program terms |
 
 **Build kit:** [`db/schema.sql`](db/schema.sql) · [`prompts/`](prompts/) · [`workflows/`](workflows/README.md)
 
@@ -84,10 +85,11 @@ and removes the 30 hours/week that normally kills these projects.
 
 ## Two things to decide before building
 
-1. **Orchestrator:** n8n (recommended — cheap, AI-native, portable) vs Power Automate
-   (you already know it; better if this must live inside Microsoft 365).
-2. **Niche:** don't guess. Run [Workflow 01](docs/04-workflows.md#w01--niche-scout)
-   and approve the top-scored candidate.
+1. **Orchestrator:** ✅ **n8n** — decided. See [workflows/README.md](workflows/README.md)
+   for setup notes and gotchas.
+2. **Niche:** shortlist researched — see [doc 10](docs/10-niche-shortlist.md). Leading
+   candidate is **MSP / IT operations tooling**; verify with [W01](docs/04-workflows.md#w01--niche-scout)
+   before committing.
 
 ---
 
