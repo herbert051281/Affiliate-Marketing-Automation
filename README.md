@@ -48,8 +48,12 @@ That single spine is what makes the whole thing measurable and automatable.
 | 9 | [90-day plan](docs/09-90-day-plan.md) | Week by week, with a "done" definition for each |
 | 10 | [Niche shortlist](docs/10-niche-shortlist.md) | 10 researched candidates, scored — with verified program terms |
 | 11 | [Program application pack](docs/11-program-application-pack.md) | Draft application answers, manager outreach email, response triage |
+| 12 | [Setup runbook](docs/12-setup-runbook.md) | Install steps with real commands — Supabase, n8n, Vercel, Power BI |
+| 13 | [Build W01](docs/13-w01-niche-scout-build.md) | Node-by-node build for the first workflow |
 
-**Build kit:** [`db/schema.sql`](db/schema.sql) · [`prompts/`](prompts/) · [`workflows/`](workflows/README.md)
+**Build kit:** [`db/schema.sql`](db/schema.sql) · [`prompts/`](prompts/) · [`workflows/`](workflows/README.md) · [`.env.example`](.env.example) · [`docker-compose.yml`](docker-compose.yml)
+
+**Picking this up on a new machine?** Start with [`HANDOFF.md`](HANDOFF.md).
 
 ---
 
@@ -96,5 +100,8 @@ and removes the 30 hours/week that normally kills these projects.
 
 ## Status
 
-This repository currently contains the **plan and build kit**. Nothing is deployed.
-See [docs/09-90-day-plan.md](docs/09-90-day-plan.md) for the build order.
+This repository contains the **plan and build kit**. Nothing is deployed yet.
+
+Next: [`docs/12-setup-runbook.md`](docs/12-setup-runbook.md) to stand up the stack, then
+[`docs/13-w01-niche-scout-build.md`](docs/13-w01-niche-scout-build.md) to settle the niche
+question with real data. Current state and open decisions: [`HANDOFF.md`](HANDOFF.md).

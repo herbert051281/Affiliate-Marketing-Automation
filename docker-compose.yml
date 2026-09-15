@@ -1,0 +1,49 @@
+# n8n behind Caddy with automatic TLS. For a VPS (~$6/mo).
+#
+#   export N8N_HOST=n8n.yourdomain.com
+#   export N8N_ENCRYPTION_KEY=$(openssl rand -hex 32)   # save this into .env
+#   docker compose up -d
+#
+# Point an A record at the VPS before starting — Caddy provisions the cert on boot.
+# For local development, the plain `docker run` in docs/12-setup-runbook.md is simpler.
+
+services:
+  n8n:
+    image: docker.io/n8nio/n8n:latest
+    restart: unless-stopped
+    environment:
+      # Losing N8N_ENCRYPTION_KEY makes stored credentials unrecoverable.
+      - N8N_ENCRYPTION_KEY=${N8N_ENCRYPTION_KEY}
+      - N8N_HOST=${N8N_HOST}
+      - N8N_PROTOCOL=https
+      - WEBHOOK_URL=https://${N8N_HOST}/
+      - GENERIC_TIMEZONE=${GENERIC_TIMEZONE:-America/New_York}
+      - N8N_DIAGNOSTICS_ENABLED=false
+      - N8N_RUNNERS_ENABLED=true
+      # Trim execution history so the volume doesn't grow without bound
+      - EXECUTIONS_DATA_PRUNE=true
+      - EXECUTIONS_DATA_MAX_AGE=336        # hours (14 days)
+    volumes:
+      - n8n_data:/home/node/.n8n
+    expose:
+      - "5678"
+
+  caddy:
+    image: docker.io/library/caddy:2-alpine
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    environment:
+      - N8N_HOST=${N8N_HOST}
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      - n8n
+
+volumes:
+  n8n_data:
+  caddy_data:
+  caddy_config:
